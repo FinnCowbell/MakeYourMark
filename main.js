@@ -184,12 +184,7 @@ var stylingArray= [
     ]
   }
 ]
-var markers = [  let marker = new google.maps.Marker({
-  map: map,
-  animation: google.maps.Animation.DROP,
-  draggable: true,
-  IP: 100,
-})];
+var markers = [];
 function initMap() {
   map = new google.maps.Map(document.getElementById('main-map'), {
     center: {lat: 37, lng: -95.7},
