@@ -202,6 +202,15 @@ var loadMarkers = function (markList, map) {
   return loadedMarkers;
 };
 
+var stressTest = function(map,loadedMarkers){
+  for(let i = 0; i <= 400; i++){
+    let markPos = {lat:i/10 - 50,lng:20*Math.floor(i%10)}
+    mark = makeNormalMark(map,markPos,"Fibb");
+    loadMarker(mark,map,loadedMarkers);
+  };
+  console.log("loaded allofem");
+}
+
 function initMap() {
   loadedMarkers = []
   map = new google.maps.Map(document.getElementById('main-map'), {
@@ -209,7 +218,7 @@ function initMap() {
       lat: 37,
       lng: -95.7
     },
-    zoom: 5,
+    zoom: 1,
     styles: stylingArray,
     streetViewControl: false,
     fullscreenControl: false,
@@ -217,6 +226,7 @@ function initMap() {
     scaleControl: true,
     disableDoubleClickZoom: true,
   });
+  stressTest(map,loadedMarkers);
   map.addListener('click', function (e) {
     let clickPos = {
       lat: e.latLng.lat(),
