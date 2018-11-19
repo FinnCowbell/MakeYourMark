@@ -159,31 +159,51 @@ var makeNormalMark = function (map, latLng, user, markList) {
   let normalMark = new Mark(map, latLng, true, normalType, user, "Red");
   if (markList) {
     markList.push(normalMark);
-  } else{
+  } else {
     return normalMark;
   }
 }
-
-//loads a marker then returns the marker
-var loadMarker = function(mark,map){
+//loads a marker then returns the marker, or puts it in a list (but not both!);
+var loadMarker = function (mark, map, markerList) {
   let newMarker = new google.maps.Marker({
     map: map,
     position: mark.latLng,
     draggable: mark.draggable,
   });
-  return newMarker;
+  //If the marker is double cliked on, 
+  newMarker.addListener('dblclick', () => {
+    console.log(markerList);
+    unloadMarker(event, newMarker, markerList)
+  });
+
+  if (markerList) {
+    markerList.push(newMarker);
+  } else {
+    return newMarker;
+  }
 }
+
+var unloadMarker = function (e, marker, markerList) {
+  console.log(marker);
+  marker.setMap(null);
+  if (markerList) {
+    let index = markerList.indexOf(marker)
+    markerList.pop(index);
+  }
+}
+
 //Loads all the markers, and returns a completed list of markers.
-var loadMarkers = function(markList, map){
+var loadMarkers = function (markList, map) {
   loadedMarkers = []
-  for(mark of markList){
-    let newMarker = loadMarker(mark,map);
+  for (mark of markList) {
+    let newMarker = loadMarker(mark, map);
     loadedMarkers.push(newMarker);
   }
   return loadedMarkers;
 };
 
 function initMap() {
+  loadedMarkers = []
   map = new google.maps.Map(document.getElementById('main-map'), {
     center: {
       lat: 37,
@@ -194,14 +214,15 @@ function initMap() {
     streetViewControl: false,
     fullscreenControl: false,
     zoomControl: false,
-    scaleControl: true
+    scaleControl: true,
+    disableDoubleClickZoom: true,
   });
   map.addListener('click', function (e) {
     let clickPos = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng()
     }
-    mark = makeNormalMark(map,clickPos,"John")
-    loadMarker(mark,map);
+    mark = makeNormalMark(map, clickPos, "John")
+    loadMarker(mark, map, loadedMarkers);
   });
 }
