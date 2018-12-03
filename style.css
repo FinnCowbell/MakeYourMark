@@ -10,6 +10,14 @@
     z-index: -1;
   }
 }
+body{
+  overflow: hidden;
+}
+#save{
+  position: fixed;
+  bottom:10px;
+  right: 10px;
+}
 .Intro{
   font-family: Arial, Helvetica, sans-serif
 }

@@ -142,7 +142,7 @@ var stylingArray = [{
 ]
 var map;
 var marks = [];
-
+var saveB = document.getElementById("save");
 
 //A Mark Object. Contains informatino to make a marker on the map (Not all of which is used yet.)
 var Mark = function (map, latLng, draggable, type, user, color) {
@@ -192,6 +192,21 @@ var unloadMarker = function (e, marker, markerList) {
   }
 }
 
+var saveMarkersLocal = function(markList){
+  console.log("saving");
+  bake_cookie("localmark",markList);
+}
+
+function bake_cookie(name, value) {
+  var cookie = [name, '=', JSON.stringify(value), '; domain=.', window.location.host.toString(), '; path=/;'].join('');
+  document.cookie = cookie;
+}
+
+function read_cookie(name) {
+  var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
+  result && (result = JSON.parse(result[1]));
+  return result;
+ }
 //Loads all the markers, and returns a completed list of markers.
 var loadMarkers = function (markList, map) {
   loadedMarkers = []
@@ -203,13 +218,14 @@ var loadMarkers = function (markList, map) {
 };
 
 var stressTest = function(map,loadedMarkers){
-  for(let i = 0; i <= 400; i++){
+  for(let i = 0; i <= 100; i++){
     let markPos = {lat:i/10 - 50,lng:20*Math.floor(i%10)}
     mark = makeNormalMark(map,markPos,"Fibb");
     loadMarker(mark,map,loadedMarkers);
   };
   console.log("loaded allofem");
 }
+
 
 function initMap() {
   loadedMarkers = []
@@ -226,7 +242,12 @@ function initMap() {
     scaleControl: true,
     disableDoubleClickZoom: true,
   });
-  stressTest(map,loadedMarkers);
+  saveB.onclick = function(loadedMarkers){saveMarkersLocal("localmark",loadedMarkers)};
+  savedMarkers = read_cookie("localmark")
+  console.log(savedMarkers)
+  if(savedMarkers){
+    loadMarkers(savedMarkers);
+  }
   map.addListener('click', function (e) {
     let clickPos = {
       lat: e.latLng.lat(),
